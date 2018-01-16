@@ -30,7 +30,7 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Alvin</name>
+	<name>Alvin Cora</name>
 
 	<properties>
 		<httphandler.version>0.2-SNAPSHOT</httphandler.version>
