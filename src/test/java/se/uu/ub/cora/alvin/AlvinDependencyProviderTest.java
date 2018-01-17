@@ -51,7 +51,7 @@ import se.uu.ub.cora.spider.search.RecordIndexer;
 
 public class AlvinDependencyProviderTest {
 	private AlvinDependencyProvider dependencyProvider;
-	private String basePath = "/tmp/recordStorageOnDiskTemp/";
+	private String basePath = "/tmp/alvinRecordStorageOnDiskTemp/";
 	private Map<String, String> initInfo;
 
 	@BeforeMethod

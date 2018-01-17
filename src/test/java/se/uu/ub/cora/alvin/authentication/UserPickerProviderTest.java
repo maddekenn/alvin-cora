@@ -34,13 +34,12 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.alvin.authentication.UserPickerProviderImp;
 import se.uu.ub.cora.userpicker.UserInStorageUserPicker;
 import se.uu.ub.cora.userpicker.UserPicker;
 import se.uu.ub.cora.userpicker.UserPickerProvider;
 
 public class UserPickerProviderTest {
-	private String basePath = "/tmp/recordStorageOnDiskTemp/";
+	private String basePath = "/tmp/alvinRecordStorageOnDiskTemp/";
 
 	@BeforeMethod
 	public void makeSureBasePathExistsAndIsEmpty() throws IOException {
