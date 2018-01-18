@@ -45,9 +45,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/lsu-ub-uu/alvin.git</connection>
-		<developerConnection>scm:git:https://github.com/lsu-ub-uu/alvin.git</developerConnection>
-		<url>https://github.com/lsu-ub-uu/alvin.git</url>
+		<connection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</connection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</developerConnection>
+		<url>https://github.com/lsu-ub-uu/alvin-cora.git</url>
 	</scm>
 
 	<repositories>
