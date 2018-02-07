@@ -42,6 +42,8 @@
 		<gatekeeperclient.version>0.4-SNAPSHOT</gatekeeperclient.version>
 		<metacreator.version>0.1-SNAPSHOT</metacreator.version>
 		<solrsearch.version>0.1-SNAPSHOT</solrsearch.version>
+		<alvintocorastorage.version>0.1-SNAPSHOT</alvintocorastorage.version>
+		<alvinmixedstorage.version>0.1-SNAPSHOT</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
@@ -111,6 +113,16 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>solrsearch</artifactId>
 			<version>${solrsearch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>alvintocorastorage</artifactId>
+			<version>${alvintocorastorage.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>alvinmixedstorage</artifactId>
+			<version>${alvinmixedstorage.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>

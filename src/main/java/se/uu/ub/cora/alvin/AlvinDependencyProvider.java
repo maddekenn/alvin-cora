@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import se.uu.ub.cora.alvin.tocorastorage.AlvinToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.AlvinToCoraConverterFactoryImp;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
@@ -69,6 +71,9 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	private SearchStorage searchStorage;
 	private String basePath;
 	private String storageOnDiskClassName;
+	private String mixedStorageClassName;
+	private String alvinToCoraStorageClassName;
+	private String fedoraURL;
 
 	public AlvinDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
@@ -81,18 +86,21 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	}
 
 	private void readInitInfo() {
-		tryToSetGatekeeperUrl();
-		basePath = tryToGetStorageOnDiskBasePath();
-		storageOnDiskClassName = tryToGetStorageOnDiskClassName();
-		tryToSetSolrUrl();
+		mixedStorageClassName = tryToGetInitParameter("mixedStorageClassName");
+		fedoraURL = tryToGetInitParameter("fedoraURL");
+		alvinToCoraStorageClassName = tryToGetInitParameter("alvinToCoraStorageClassName");
+		gatekeeperUrl = tryToGetInitParameter("gatekeeperURL");
+		basePath = tryToGetInitParameter("storageOnDiskBasePath");
+		storageOnDiskClassName = tryToGetInitParameter("storageOnDiskClassName");
+		solrUrl = tryToGetInitParameter("solrURL");
 	}
 
-	private String tryToGetStorageOnDiskClassName() {
-		throwErrorIfMissingKeyIsMissingFromInitInfo("storageOnDiskClassName");
-		return initInfo.get("storageOnDiskClassName");
+	private String tryToGetInitParameter(String parameterName) {
+		throwErrorIfKeyIsMissingFromInitInfo(parameterName);
+		return initInfo.get(parameterName);
 	}
 
-	private void throwErrorIfMissingKeyIsMissingFromInitInfo(String key) {
+	private void throwErrorIfKeyIsMissingFromInitInfo(String key) {
 		if (!initInfo.containsKey(key)) {
 			throw new RuntimeException("InitInfo must contain " + key);
 		}
@@ -100,18 +108,20 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 
 	private void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
 			IllegalAccessException, InvocationTargetException {
-		recordStorage = tryToCreateRecordStorage(basePath);
+		RecordStorage basicStorage = tryToCreateRecordStorage();
+		RecordStorage alvinToCoraStorage = tryToCreateAlvinToCoraStorage();
+		recordStorage = tryToCreateMixedRecordStorage(basicStorage, alvinToCoraStorage);
 
-		metadataStorage = (MetadataStorage) recordStorage;
+		metadataStorage = (MetadataStorage) basicStorage;
 		idGenerator = new TimeStampIdGenerator();
 		streamStorage = StreamStorageOnDisk.usingBasePath(basePath + "streams/");
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 		solrRecordIndexer = SolrRecordIndexer
 				.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
-		searchStorage = (SearchStorage) recordStorage;
+		searchStorage = (SearchStorage) basicStorage;
 	}
 
-	private RecordStorage tryToCreateRecordStorage(String basePath) throws NoSuchMethodException,
+	private RecordStorage tryToCreateRecordStorage() throws NoSuchMethodException,
 			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		Class<?>[] cArg = new Class[1];
 		cArg[0] = String.class;
@@ -120,19 +130,27 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 		return (RecordStorage) constructor.invoke(null, basePath);
 	}
 
-	private void tryToSetGatekeeperUrl() {
-		throwErrorIfMissingKeyIsMissingFromInitInfo("gatekeeperURL");
-		gatekeeperUrl = initInfo.get("gatekeeperURL");
+	private RecordStorage tryToCreateAlvinToCoraStorage() throws NoSuchMethodException,
+			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
+		Class<?>[] cArg = new Class[3];
+		cArg[0] = HttpHandlerFactory.class;
+		cArg[1] = AlvinToCoraConverterFactory.class;
+		cArg[2] = String.class;
+		Method constructor = Class.forName(alvinToCoraStorageClassName)
+				.getMethod("usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL", cArg);
+		return (RecordStorage) constructor.invoke(null, new HttpHandlerFactoryImp(),
+				new AlvinToCoraConverterFactoryImp(), fedoraURL);
 	}
 
-	private String tryToGetStorageOnDiskBasePath() {
-		throwErrorIfMissingKeyIsMissingFromInitInfo("storageOnDiskBasePath");
-		return initInfo.get("storageOnDiskBasePath");
-	}
-
-	private void tryToSetSolrUrl() {
-		throwErrorIfMissingKeyIsMissingFromInitInfo("solrURL");
-		solrUrl = initInfo.get("solrURL");
+	private RecordStorage tryToCreateMixedRecordStorage(RecordStorage basicStorage,
+			RecordStorage alvinToCoraStorage) throws NoSuchMethodException, ClassNotFoundException,
+			IllegalAccessException, InvocationTargetException {
+		Class<?>[] cArg = new Class[2];
+		cArg[0] = RecordStorage.class;
+		cArg[1] = RecordStorage.class;
+		Method constructor = Class.forName(mixedStorageClassName)
+				.getMethod("usingBasicAndAlvinToCoraStorage", cArg);
+		return (RecordStorage) constructor.invoke(null, basicStorage, alvinToCoraStorage);
 	}
 
 	@Override

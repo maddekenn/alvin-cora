@@ -59,6 +59,9 @@ public class AlvinDependencyProviderTest {
 		try {
 			makeSureBasePathExistsAndIsEmpty();
 			initInfo = new HashMap<>();
+			initInfo.put("mixedStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("alvinToCoraStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("fedoraURL", "http://alvin-cora-fedora:8088/fedora/");
 			initInfo.put("storageOnDiskClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
 			initInfo.put("storageOnDiskBasePath", basePath);
@@ -121,6 +124,45 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
+	public void testMixedStorage() throws Exception {
+		RecordStorageSpy recordStorage = (RecordStorageSpy) dependencyProvider.getRecordStorage();
+		assertTrue(recordStorage instanceof RecordStorageSpy);
+		assertTrue(recordStorage.basicStorage instanceof RecordStorageSpy);
+		assertTrue(recordStorage.alvinToCoraStorage instanceof RecordStorageSpy);
+	}
+
+	@Test
+	public void testMissingMixedStorageClassNameInInitInfo() {
+		initInfo.remove("mixedStorageClassName");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain mixedStorageClassName");
+	}
+
+	@Test
+	public void testMissingAlvinToCoraStorageClassNameInInitInfo() {
+		initInfo.remove("alvinToCoraStorageClassName");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(),
+				"InitInfo must contain alvinToCoraStorageClassName");
+	}
+
+	@Test
+	public void testMissingFedoraURLInInitInfo() {
+		initInfo.remove("fedoraURL");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain fedoraURL");
+	}
+
+	@Test
 	public void testMissingStorageClassNameInInitInfo() {
 		initInfo.remove("storageOnDiskClassName");
 
@@ -162,8 +204,16 @@ public class AlvinDependencyProviderTest {
 	public void testCorrectBasePathSentToStorageOnDisk() throws Exception {
 		assertEquals(dependencyProvider.getRecordStorage().getClass().getName(),
 				initInfo.get("storageOnDiskClassName"));
-		assertEquals(((RecordStorageSpy) dependencyProvider.getRecordStorage()).getBasePath(),
-				initInfo.get("storageOnDiskBasePath"));
+		assertEquals(((RecordStorageSpy) dependencyProvider.getRecordStorage()).basicStorage
+				.getBasePath(), initInfo.get("storageOnDiskBasePath"));
+	}
+
+	@Test
+	public void testCorrectBaseUrlSentToAlvinToCoraStorage() throws Exception {
+		assertEquals(dependencyProvider.getRecordStorage().getClass().getName(),
+				initInfo.get("storageOnDiskClassName"));
+		assertEquals(((RecordStorageSpy) dependencyProvider
+				.getRecordStorage()).alvinToCoraStorage.baseURL, initInfo.get("fedoraURL"));
 	}
 
 	@Test

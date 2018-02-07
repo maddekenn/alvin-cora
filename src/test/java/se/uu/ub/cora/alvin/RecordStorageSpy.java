@@ -2,14 +2,21 @@ package se.uu.ub.cora.alvin;
 
 import java.util.Collection;
 
+import se.uu.ub.cora.alvin.tocorastorage.AlvinToCoraConverterFactory;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
+import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 
 public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchStorage {
 
 	private String basePath;
+	public RecordStorageSpy basicStorage;
+	public RecordStorageSpy alvinToCoraStorage;
+	public HttpHandlerFactory httpHandlerFactory;
+	public AlvinToCoraConverterFactory converterFactory;
+	public String baseURL;
 
 	public static RecordStorageSpy createRecordStorageOnDiskWithBasePath(String basePath) {
 		return new RecordStorageSpy(basePath);
@@ -17,6 +24,29 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 
 	private RecordStorageSpy(String basePath) {
 		this.basePath = basePath;
+	}
+
+	public static RecordStorage usingBasicAndAlvinToCoraStorage(RecordStorage basicStorage,
+			RecordStorage alvinToCoraStorage) {
+		return new RecordStorageSpy(basicStorage, alvinToCoraStorage);
+	}
+
+	public RecordStorageSpy(RecordStorage basicStorage, RecordStorage alvinToCoraStorage) {
+		this.basicStorage = (RecordStorageSpy) basicStorage;
+		this.alvinToCoraStorage = (RecordStorageSpy) alvinToCoraStorage;
+	}
+
+	private RecordStorageSpy(HttpHandlerFactory httpHandlerFactory,
+			AlvinToCoraConverterFactory converterFactory, String baseURL) {
+		this.httpHandlerFactory = httpHandlerFactory;
+		this.converterFactory = converterFactory;
+		this.baseURL = baseURL;
+	}
+
+	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
+			HttpHandlerFactory httpHandlerFactory, AlvinToCoraConverterFactory converterFactory,
+			String baseURL) {
+		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL);
 	}
 
 	@Override
@@ -82,7 +112,8 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	}
 
 	@Override
-	public boolean recordExistsForAbstractOrImplementingRecordTypeAndRecordId(String type, String id) {
+	public boolean recordExistsForAbstractOrImplementingRecordTypeAndRecordId(String type,
+			String id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
