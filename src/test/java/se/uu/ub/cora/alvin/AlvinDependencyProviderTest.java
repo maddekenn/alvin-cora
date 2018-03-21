@@ -35,11 +35,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.naming.InitialContext;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.connection.ContextConnectionProviderImp;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
+import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
@@ -48,6 +53,7 @@ import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.search.RecordIndexer;
+import se.uu.ub.cora.sqldatabase.RecordReaderFactoryImp;
 
 public class AlvinDependencyProviderTest {
 	private AlvinDependencyProvider dependencyProvider;
@@ -59,10 +65,12 @@ public class AlvinDependencyProviderTest {
 		try {
 			makeSureBasePathExistsAndIsEmpty();
 			initInfo = new HashMap<>();
-			initInfo.put("mixedStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
-			initInfo.put("alvinToCoraStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("storageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("basicStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("fedoraToCoraStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("fedoraURL", "http://alvin-cora-fedora:8088/fedora/");
-			initInfo.put("storageOnDiskClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
+			initInfo.put("dbToCoraStorageClassName", "se.uu.ub.cora.alvin.DbStorageSpy");
+			initInfo.put("databaseLookupName", "java:/comp/env/jdbc/postgres");
 			initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
 			initInfo.put("storageOnDiskBasePath", basePath);
 			initInfo.put("solrURL", "http://localhost:8983/solr/stuff");
@@ -128,28 +136,29 @@ public class AlvinDependencyProviderTest {
 		RecordStorageSpy recordStorage = (RecordStorageSpy) dependencyProvider.getRecordStorage();
 		assertTrue(recordStorage instanceof RecordStorageSpy);
 		assertTrue(recordStorage.basicStorage instanceof RecordStorageSpy);
-		assertTrue(recordStorage.alvinToCoraStorage instanceof RecordStorageSpy);
+		assertTrue(recordStorage.fedoraToCoraStorage instanceof RecordStorageSpy);
+		assertTrue(recordStorage.dbToCoraStorage instanceof DbStorageSpy);
 	}
 
 	@Test
-	public void testMissingMixedStorageClassNameInInitInfo() {
-		initInfo.remove("mixedStorageClassName");
+	public void testMissingStorageClassNameInInitInfo() {
+		initInfo.remove("storageClassName");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
 		assertTrue(thrownException instanceof RuntimeException);
-		assertEquals(thrownException.getMessage(), "InitInfo must contain mixedStorageClassName");
+		assertEquals(thrownException.getMessage(), "InitInfo must contain storageClassName");
 	}
 
 	@Test
-	public void testMissingAlvinToCoraStorageClassNameInInitInfo() {
-		initInfo.remove("alvinToCoraStorageClassName");
+	public void testMissingFedoraToCoraStorageClassNameInInitInfo() {
+		initInfo.remove("fedoraToCoraStorageClassName");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
 		assertTrue(thrownException instanceof RuntimeException);
 		assertEquals(thrownException.getMessage(),
-				"InitInfo must contain alvinToCoraStorageClassName");
+				"InitInfo must contain fedoraToCoraStorageClassName");
 	}
 
 	@Test
@@ -163,13 +172,30 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
-	public void testMissingStorageClassNameInInitInfo() {
-		initInfo.remove("storageOnDiskClassName");
+	public void testMissingDbToCoraStorageClassNameInInitInfo() {
+		initInfo.remove("dbToCoraStorageClassName");
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(),
+				"InitInfo must contain dbToCoraStorageClassName");
+	}
+
+	@Test
+	public void testMissingDbLookupNameInInitInfo() {
+		initInfo.remove("databaseLookupName");
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain databaseLookupName");
+	}
+
+	@Test
+	public void testMissingBasicStorageClassNameInInitInfo() {
+		initInfo.remove("basicStorageClassName");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
 		assertTrue(thrownException instanceof RuntimeException);
-		assertEquals(thrownException.getMessage(), "InitInfo must contain storageOnDiskClassName");
+		assertEquals(thrownException.getMessage(), "InitInfo must contain basicStorageClassName");
 	}
 
 	private Exception callSystemOneDependencyProviderAndReturnResultingError() {
@@ -183,8 +209,8 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
-	public void testNonExisitingStorageOnDiskClassNameInInitInfo() {
-		initInfo.put("storageOnDiskClassName", "se.uu.ub.cora.systemone.RecordStorageNON");
+	public void testNonExisitingbasicStorageClassNameInInitInfo() {
+		initInfo.put("basicStorageClassName", "se.uu.ub.cora.systemone.RecordStorageNON");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
@@ -194,26 +220,41 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
-	public void testCorrectStorageOnDiskClassInitialized() throws Exception {
-		assertEquals(dependencyProvider.getRecordStorage().getClass().getName(),
-				initInfo.get("storageOnDiskClassName"));
+	public void testCorrectBasicStorageClassInitialized() throws Exception {
+		String storageClassName = dependencyProvider.getRecordStorage().getClass().getName();
+
+		assertEquals(storageClassName, initInfo.get("basicStorageClassName"));
 		assertTrue(dependencyProvider.getRecordStorage() instanceof RecordStorageSpy);
 	}
 
 	@Test
 	public void testCorrectBasePathSentToStorageOnDisk() throws Exception {
-		assertEquals(dependencyProvider.getRecordStorage().getClass().getName(),
-				initInfo.get("storageOnDiskClassName"));
 		assertEquals(((RecordStorageSpy) dependencyProvider.getRecordStorage()).basicStorage
 				.getBasePath(), initInfo.get("storageOnDiskBasePath"));
 	}
 
 	@Test
-	public void testCorrectBaseUrlSentToAlvinToCoraStorage() throws Exception {
-		assertEquals(dependencyProvider.getRecordStorage().getClass().getName(),
-				initInfo.get("storageOnDiskClassName"));
-		assertEquals(((RecordStorageSpy) dependencyProvider
-				.getRecordStorage()).alvinToCoraStorage.baseURL, initInfo.get("fedoraURL"));
+	public void testCorrectInitParametersUsedInFedoraToCoraStorage() throws Exception {
+		RecordStorageSpy fedoraToCoraStorage = ((RecordStorageSpy) dependencyProvider
+				.getRecordStorage()).fedoraToCoraStorage;
+		assertEquals(fedoraToCoraStorage.baseURL, initInfo.get("fedoraURL"));
+		assertTrue(fedoraToCoraStorage.httpHandlerFactory instanceof HttpHandlerFactoryImp);
+	}
+
+	@Test
+	public void testCorrectInitParametersUsedInDbToCoraStorage() throws Exception {
+		DbStorageSpy dbToCoraStorage = ((RecordStorageSpy) dependencyProvider
+				.getRecordStorage()).dbToCoraStorage;
+		RecordReaderFactoryImp recordReaderFactory = (RecordReaderFactoryImp) dbToCoraStorage.recordReaderFactory;
+		assertTrue(recordReaderFactory instanceof RecordReaderFactoryImp);
+		ContextConnectionProviderImp connectionProvider = (ContextConnectionProviderImp) recordReaderFactory
+				.getConnectionProvider();
+		assertTrue(connectionProvider instanceof ContextConnectionProviderImp);
+
+		assertEquals(connectionProvider.getName(), initInfo.get("databaseLookupName"));
+		assertTrue(connectionProvider.getContext() instanceof InitialContext);
+
+		assertTrue(dbToCoraStorage.converterFactory instanceof AlvinDbToCoraConverterFactoryImp);
 	}
 
 	@Test

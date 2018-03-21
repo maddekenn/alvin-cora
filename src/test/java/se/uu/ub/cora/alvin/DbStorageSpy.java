@@ -2,54 +2,28 @@ package se.uu.ub.cora.alvin;
 
 import java.util.Collection;
 
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
-import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
+import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
 
-public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchStorage {
+public class DbStorageSpy implements RecordStorage, MetadataStorage, SearchStorage {
 
-	private String basePath;
-	public RecordStorageSpy basicStorage;
-	public RecordStorageSpy fedoraToCoraStorage;
-	public DbStorageSpy dbToCoraStorage;
-	public HttpHandlerFactory httpHandlerFactory;
-	public AlvinFedoraToCoraConverterFactory converterFactory;
-	public String baseURL;
+	public RecordReaderFactory recordReaderFactory;
+	public AlvinDbToCoraConverterFactory converterFactory;
 
-	public static RecordStorageSpy createRecordStorageOnDiskWithBasePath(String basePath) {
-		return new RecordStorageSpy(basePath);
-	}
-
-	private RecordStorageSpy(String basePath) {
-		this.basePath = basePath;
-	}
-
-	public static RecordStorage usingBasicAndFedoraAndDbStorage(RecordStorage basicStorage,
-			RecordStorage fedoraToCoraStorage, RecordStorage dbToCoraStorage) {
-		return new RecordStorageSpy(basicStorage, fedoraToCoraStorage, dbToCoraStorage);
-	}
-
-	public RecordStorageSpy(RecordStorage basicStorage, RecordStorage fedoraToCoraStorage,
-			RecordStorage dbToCoraStorage) {
-		this.basicStorage = (RecordStorageSpy) basicStorage;
-		this.fedoraToCoraStorage = (RecordStorageSpy) fedoraToCoraStorage;
-		this.dbToCoraStorage = (DbStorageSpy) dbToCoraStorage;
-	}
-
-	private RecordStorageSpy(HttpHandlerFactory httpHandlerFactory,
-			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL) {
-		this.httpHandlerFactory = httpHandlerFactory;
+	public DbStorageSpy(RecordReaderFactory recordReaderFactory,
+			AlvinDbToCoraConverterFactory converterFactory) {
+		this.recordReaderFactory = recordReaderFactory;
 		this.converterFactory = converterFactory;
-		this.baseURL = baseURL;
 	}
 
-	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
-			HttpHandlerFactory httpHandlerFactory, AlvinFedoraToCoraConverterFactory converterFactory,
-			String baseURL) {
-		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL);
+	public static DbStorageSpy usingRecordReaderFactoryAndConverterFactory(
+			RecordReaderFactory recordReaderFactory,
+			AlvinDbToCoraConverterFactory converterFactory) {
+		return new DbStorageSpy(recordReaderFactory, converterFactory);
 	}
 
 	@Override
@@ -161,10 +135,6 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	public DataGroup getCollectIndexTerm(String collectIndexTermId) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public String getBasePath() {
-		return basePath;
 	}
 
 }

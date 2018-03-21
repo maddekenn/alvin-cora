@@ -23,8 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import se.uu.ub.cora.alvin.tocorastorage.AlvinToCoraConverterFactory;
-import se.uu.ub.cora.alvin.tocorastorage.AlvinToCoraConverterFactoryImp;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
@@ -33,6 +38,8 @@ import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollectorImp;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.bookkeeper.validator.DataValidatorImp;
+import se.uu.ub.cora.connection.ContextConnectionProviderImp;
+import se.uu.ub.cora.connection.SqlConnectionProvider;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
@@ -56,6 +63,8 @@ import se.uu.ub.cora.spider.role.RulesProvider;
 import se.uu.ub.cora.spider.role.RulesProviderImp;
 import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
+import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
+import se.uu.ub.cora.sqldatabase.RecordReaderFactoryImp;
 import se.uu.ub.cora.storage.StreamStorageOnDisk;
 
 public class AlvinDependencyProvider extends SpiderDependencyProvider {
@@ -70,10 +79,12 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	private SolrClientProviderImp solrClientProvider;
 	private SearchStorage searchStorage;
 	private String basePath;
-	private String storageOnDiskClassName;
-	private String mixedStorageClassName;
-	private String alvinToCoraStorageClassName;
+	private String basicStorageClassName;
+	private String storageClassName;
+	private String fedoraToCoraStorageClassName;
+	private String dbToCoraStorageClassName;
 	private String fedoraURL;
+	private String databaseLookupName;
 
 	public AlvinDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
@@ -86,13 +97,15 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	}
 
 	private void readInitInfo() {
-		mixedStorageClassName = tryToGetInitParameter("mixedStorageClassName");
+		storageClassName = tryToGetInitParameter("storageClassName");
+		basicStorageClassName = tryToGetInitParameter("basicStorageClassName");
 		fedoraURL = tryToGetInitParameter("fedoraURL");
-		alvinToCoraStorageClassName = tryToGetInitParameter("alvinToCoraStorageClassName");
+		fedoraToCoraStorageClassName = tryToGetInitParameter("fedoraToCoraStorageClassName");
+		dbToCoraStorageClassName = tryToGetInitParameter("dbToCoraStorageClassName");
 		gatekeeperUrl = tryToGetInitParameter("gatekeeperURL");
 		basePath = tryToGetInitParameter("storageOnDiskBasePath");
-		storageOnDiskClassName = tryToGetInitParameter("storageOnDiskClassName");
 		solrUrl = tryToGetInitParameter("solrURL");
+		databaseLookupName = tryToGetInitParameter("databaseLookupName");
 	}
 
 	private String tryToGetInitParameter(String parameterName) {
@@ -107,10 +120,12 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	}
 
 	private void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
-			IllegalAccessException, InvocationTargetException {
-		RecordStorage basicStorage = tryToCreateRecordStorage();
-		RecordStorage alvinToCoraStorage = tryToCreateAlvinToCoraStorage();
-		recordStorage = tryToCreateMixedRecordStorage(basicStorage, alvinToCoraStorage);
+			IllegalAccessException, InvocationTargetException, NamingException {
+		RecordStorage basicStorage = tryToCreateBasicRecordStorage();
+		RecordStorage fedoraToCoraStorage = tryToCreateFedoraToCoraStorage();
+		RecordStorage dbToCoraStorage = tryToCreateDbToCoraStorage();
+		recordStorage = tryToCreateRecordStorage(basicStorage, fedoraToCoraStorage,
+				dbToCoraStorage);
 
 		metadataStorage = (MetadataStorage) basicStorage;
 		idGenerator = new TimeStampIdGenerator();
@@ -121,36 +136,61 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 		searchStorage = (SearchStorage) basicStorage;
 	}
 
-	private RecordStorage tryToCreateRecordStorage() throws NoSuchMethodException,
+	private RecordStorage tryToCreateBasicRecordStorage() throws NoSuchMethodException,
 			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		Class<?>[] cArg = new Class[1];
 		cArg[0] = String.class;
-		Method constructor = Class.forName(storageOnDiskClassName)
+		Method constructor = Class.forName(basicStorageClassName)
 				.getMethod("createRecordStorageOnDiskWithBasePath", cArg);
 		return (RecordStorage) constructor.invoke(null, basePath);
 	}
 
-	private RecordStorage tryToCreateAlvinToCoraStorage() throws NoSuchMethodException,
+	private RecordStorage tryToCreateFedoraToCoraStorage() throws NoSuchMethodException,
 			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		Class<?>[] cArg = new Class[3];
 		cArg[0] = HttpHandlerFactory.class;
-		cArg[1] = AlvinToCoraConverterFactory.class;
+		cArg[1] = AlvinFedoraToCoraConverterFactory.class;
 		cArg[2] = String.class;
-		Method constructor = Class.forName(alvinToCoraStorageClassName)
+		Method constructor = Class.forName(fedoraToCoraStorageClassName)
 				.getMethod("usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL", cArg);
 		return (RecordStorage) constructor.invoke(null, new HttpHandlerFactoryImp(),
-				new AlvinToCoraConverterFactoryImp(), fedoraURL);
+				new AlvinFedoraToCoraConverterFactoryImp(), fedoraURL);
 	}
 
-	private RecordStorage tryToCreateMixedRecordStorage(RecordStorage basicStorage,
-			RecordStorage alvinToCoraStorage) throws NoSuchMethodException, ClassNotFoundException,
-			IllegalAccessException, InvocationTargetException {
+	private RecordStorage tryToCreateDbToCoraStorage()
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+			ClassNotFoundException, NamingException {
 		Class<?>[] cArg = new Class[2];
+		cArg[0] = RecordReaderFactory.class;
+		cArg[1] = AlvinDbToCoraConverterFactory.class;
+		Method constructor = Class.forName(dbToCoraStorageClassName)
+				.getMethod("usingRecordReaderFactoryAndConverterFactory", cArg);
+
+		SqlConnectionProvider sqlConnectionProvider = createConnectionProvider();
+
+		RecordReaderFactoryImp recordReaderFactory = new RecordReaderFactoryImp(
+				sqlConnectionProvider);
+		return (RecordStorage) constructor.invoke(null, recordReaderFactory,
+				new AlvinDbToCoraConverterFactoryImp());
+	}
+
+	private SqlConnectionProvider createConnectionProvider() throws NamingException {
+		InitialContext context = new InitialContext();
+		return ContextConnectionProviderImp.usingInitialContextAndName(context, databaseLookupName);
+	}
+
+	private RecordStorage tryToCreateRecordStorage(RecordStorage basicStorage,
+			RecordStorage fedoraToCoraStorage, RecordStorage dbToCoraStorage)
+			throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException,
+			InvocationTargetException {
+		Class<?>[] cArg = new Class[3];
 		cArg[0] = RecordStorage.class;
 		cArg[1] = RecordStorage.class;
-		Method constructor = Class.forName(mixedStorageClassName)
-				.getMethod("usingBasicAndAlvinToCoraStorage", cArg);
-		return (RecordStorage) constructor.invoke(null, basicStorage, alvinToCoraStorage);
+		cArg[2] = RecordStorage.class;
+		Method constructor = Class.forName(storageClassName)
+				.getMethod("usingBasicAndFedoraAndDbStorage", cArg);
+		return (RecordStorage) constructor.invoke(null, basicStorage, fedoraToCoraStorage,
+				dbToCoraStorage);
 	}
 
 	@Override
