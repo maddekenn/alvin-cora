@@ -125,7 +125,7 @@ public class AlvinDependencyProviderTest {
 		assertTrue(dependencyProvider.getAuthenticator() instanceof AuthenticatorImp);
 		assertTrue(dependencyProvider
 				.getExtendedFunctionalityProvider() instanceof MetacreatorExtendedFunctionalityProvider);
-		assertNotNull(dependencyProvider.getDataGroupSearchTermCollector());
+		assertNotNull(dependencyProvider.getDataGroupTermCollector());
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 		SolrRecordSearch solrRecordSearch = (SolrRecordSearch) dependencyProvider.getRecordSearch();
 		assertTrue(solrRecordSearch.getSearchStorage() instanceof RecordStorageSpy);

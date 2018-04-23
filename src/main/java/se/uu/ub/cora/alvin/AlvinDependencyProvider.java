@@ -249,7 +249,7 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	}
 
 	@Override
-	public DataGroupTermCollector getDataGroupSearchTermCollector() {
+	public DataGroupTermCollector getDataGroupTermCollector() {
 		return new DataGroupTermCollectorImp(metadataStorage);
 	}
 
