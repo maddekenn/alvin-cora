@@ -43,7 +43,7 @@
 		<metacreator.version>0.1-SNAPSHOT</metacreator.version>
 		<solrsearch.version>0.1-SNAPSHOT</solrsearch.version>
 		<alvintocorastorage.version>0.1-SNAPSHOT</alvintocorastorage.version>
-		<alvinmixedstorage.version>0.1-SNAPSHOT</alvinmixedstorage.version>
+		<alvinmixedstorage.version>0.2-SNAPSHOT</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
