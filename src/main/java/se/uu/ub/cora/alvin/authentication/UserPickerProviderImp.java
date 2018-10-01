@@ -29,11 +29,13 @@ import se.uu.ub.cora.userpicker.UserStorage;
 
 public final class UserPickerProviderImp implements UserPickerProvider {
 
+	private static final String ALVIN_GUEST_USERID = "coraUser:5368244264733286";
 	private UserInStorageUserPicker userPicker;
 
 	public UserPickerProviderImp(Map<String, String> initInfo) {
 		UserStorage userStorage = new UserStorageImp(initInfo);
-		userPicker = UserInStorageUserPicker.usingUserStorage(userStorage);
+		userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage,
+				ALVIN_GUEST_USERID);
 	}
 
 	@Override
