@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>alvin</artifactId>
@@ -25,7 +25,7 @@
 	<name>Alvin Cora</name>
 
 	<properties>
-		<java.release.version>10</java.release.version>
+<!-- 		<java.release.version>10</java.release.version> -->
 		
 		<httphandler.version>0.3-SNAPSHOT</httphandler.version>
 		<bookkeeper.version>0.10-SNAPSHOT</bookkeeper.version>
@@ -128,13 +128,13 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<release>${java.release.version}</release>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
+<!-- 				<configuration> -->
+<!-- 					<release>${java.release.version}</release> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
