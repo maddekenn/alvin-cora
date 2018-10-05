@@ -19,25 +19,23 @@
 	</parent>
 
 	<artifactId>alvin</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Alvin Cora</name>
 
 	<properties>
-		<java.release.version>10</java.release.version>
-		
-		<httphandler.version>0.3-SNAPSHOT</httphandler.version>
-		<bookkeeper.version>0.10-SNAPSHOT</bookkeeper.version>
-		<beefeater.version>0.6-SNAPSHOT</beefeater.version>
-		<spider.version>0.14-SNAPSHOT</spider.version>
-		<basicstorage.version>0.6-SNAPSHOT</basicstorage.version>
-		<userpicker.version>0.3-SNAPSHOT</userpicker.version>
-		<gatekeeperclient.version>0.4-SNAPSHOT</gatekeeperclient.version>
-		<metacreator.version>0.1-SNAPSHOT</metacreator.version>
-		<solrsearch.version>0.1-SNAPSHOT</solrsearch.version>
-		<alvintocorastorage.version>0.1-SNAPSHOT</alvintocorastorage.version>
-		<alvinmixedstorage.version>0.2-SNAPSHOT</alvinmixedstorage.version>
+		<httphandler.version>0.4-SNAPSHOT</httphandler.version>
+		<bookkeeper.version>0.12-SNAPSHOT</bookkeeper.version>
+		<beefeater.version>0.7-SNAPSHOT</beefeater.version>
+		<spider.version>0.15-SNAPSHOT</spider.version>
+		<basicstorage.version>0.7-SNAPSHOT</basicstorage.version>
+		<userpicker.version>0.4-SNAPSHOT</userpicker.version>
+		<gatekeeperclient.version>0.5-SNAPSHOT</gatekeeperclient.version>
+		<metacreator.version>0.2-SNAPSHOT</metacreator.version>
+		<solrsearch.version>0.2-SNAPSHOT</solrsearch.version>
+		<alvintocorastorage.version>0.2-SNAPSHOT</alvintocorastorage.version>
+		<alvinmixedstorage.version>0.3-SNAPSHOT</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
@@ -45,21 +43,6 @@
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/alvin-cora.git</url>
 	</scm>
-
-	<repositories>
-		<repository>
-			<id>maven-public</id>
-			<name>LSU Nexus Repository</name>
-			<url>http://epc.ub.uu.se/nexus/repository/maven-public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>daily</updatePolicy>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -130,15 +113,8 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<release>${java.release.version}</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.3</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
