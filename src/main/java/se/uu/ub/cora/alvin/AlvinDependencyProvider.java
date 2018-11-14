@@ -88,23 +88,7 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 
 	public AlvinDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
-		// readInitInfo();
-		// try {
-		// tryToInitialize();
-		// } catch (InvocationTargetException e) {
-		// throwRuntimeExceptionWithRootCauseForInvocationException(e);
-		// } catch (Exception e) {
-		// throw new RuntimeException("Error starting AlvinDependencyProvider: " +
-		// e.getMessage());
-		// }
 	}
-
-	// private void throwRuntimeExceptionWithRootCauseForInvocationException(
-	// InvocationTargetException e) {
-	// throw new RuntimeException(
-	// "Error starting AlvinDependencyProvider: " +
-	// e.getTargetException().getMessage());
-	// }
 
 	@Override
 	protected void readInitInfo() {
