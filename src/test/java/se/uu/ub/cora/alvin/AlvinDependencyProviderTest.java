@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017 Uppsala University Library
+ * Copyright 2015, 2017, 2018 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -28,6 +28,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -215,8 +216,17 @@ public class AlvinDependencyProviderTest {
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
 		assertTrue(thrownException instanceof RuntimeException);
-		assertEquals(thrownException.getMessage(),
-				"Error starting The Rest: " + "se.uu.ub.cora.systemone.RecordStorageNON");
+		assertEquals(thrownException.getMessage(), "Error starting AlvinDependencyProvider: "
+				+ "se.uu.ub.cora.systemone.RecordStorageNON");
+	}
+
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error starting AlvinDependencyProvider: "
+			+ "Invocation exception from RecordStorageErrorOnStartupSpy")
+	public void testHandlingAndGettingCorrectErrorMessageFromErrorsThrowsOnStartup() {
+		initInfo.put("storageClassName",
+				"se.uu.ub.cora.alvin.RecordStorageInvocationErrorOnStartupSpy");
+		dependencyProvider = new AlvinDependencyProvider(initInfo);
 	}
 
 	@Test
@@ -309,7 +319,7 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test(expectedExceptions = RuntimeException.class)
-	public void testMissingSolrUrlInInitInfo() {
+	public void testMissingSolrUrlInInitInfo() throws InvocationTargetException {
 		Map<String, String> initInfo = new HashMap<>();
 		initInfo.put("storageOnDiskBasePath", basePath);
 		initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2017 Uppsala University Library
+ * Copyright 2015, 2016, 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -88,15 +88,26 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 
 	public AlvinDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
-		readInitInfo();
-		try {
-			tryToInitialize();
-		} catch (Exception e) {
-			throw new RuntimeException("Error starting The Rest: " + e.getMessage());
-		}
+		// readInitInfo();
+		// try {
+		// tryToInitialize();
+		// } catch (InvocationTargetException e) {
+		// throwRuntimeExceptionWithRootCauseForInvocationException(e);
+		// } catch (Exception e) {
+		// throw new RuntimeException("Error starting AlvinDependencyProvider: " +
+		// e.getMessage());
+		// }
 	}
 
-	private void readInitInfo() {
+	// private void throwRuntimeExceptionWithRootCauseForInvocationException(
+	// InvocationTargetException e) {
+	// throw new RuntimeException(
+	// "Error starting AlvinDependencyProvider: " +
+	// e.getTargetException().getMessage());
+	// }
+
+	@Override
+	protected void readInitInfo() {
 		storageClassName = tryToGetInitParameter("storageClassName");
 		basicStorageClassName = tryToGetInitParameter("basicStorageClassName");
 		fedoraURL = tryToGetInitParameter("fedoraURL");
@@ -119,7 +130,8 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 		}
 	}
 
-	private void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
+	@Override
+	protected void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
 			IllegalAccessException, InvocationTargetException, NamingException {
 		RecordStorage basicStorage = tryToCreateBasicRecordStorage();
 		RecordStorage fedoraToCoraStorage = tryToCreateFedoraToCoraStorage();
