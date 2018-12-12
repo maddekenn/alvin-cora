@@ -6,43 +6,40 @@
 	be useful, ~ but WITHOUT ANY WARRANTY; without even the implied warranty 
 	of ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ~ GNU General 
 	Public License for more details. ~ ~ You should have received a copy of the 
-	GNU General Public License ~ along with Cora. If not, see <http://www.gnu.org/licenses/>. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	GNU General Public License ~ along with Cora. If not, see <http://www.gnu.org/licenses />. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.8.6</version>
 	</parent>
 
 	<artifactId>alvin</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Alvin Cora</name>
 
 	<properties>
-		<httphandler.version>0.4-SNAPSHOT</httphandler.version>
-		<bookkeeper.version>0.12-SNAPSHOT</bookkeeper.version>
-		<beefeater.version>0.7-SNAPSHOT</beefeater.version>
-		<spider.version>0.15-SNAPSHOT</spider.version>
-		<basicstorage.version>0.8-SNAPSHOT</basicstorage.version>
-		<userpicker.version>0.4-SNAPSHOT</userpicker.version>
-		<gatekeeperclient.version>0.5-SNAPSHOT</gatekeeperclient.version>
-		<metacreator.version>0.2-SNAPSHOT</metacreator.version>
-		<solrsearch.version>0.2-SNAPSHOT</solrsearch.version>
-		<alvintocorastorage.version>0.2-SNAPSHOT</alvintocorastorage.version>
-		<alvinmixedstorage.version>0.3-SNAPSHOT</alvinmixedstorage.version>
+		<httphandler.version>0.5.1</httphandler.version>
+		<spider.version>0.16.0</spider.version>
+		<basicstorage.version>0.9.0</basicstorage.version>
+		<userpicker.version>0.5.0</userpicker.version>
+		<gatekeeperclient.version>0.6.0</gatekeeperclient.version>
+		<metacreator.version>0.3.0</metacreator.version>
+		<solrsearch.version>0.3.0</solrsearch.version>
+		<alvintocorastorage.version>0.3.0</alvintocorastorage.version>
+		<alvinmixedstorage.version>0.4.0</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
 		<connection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/alvin-cora.git</url>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<dependencies>
 		<dependency>
@@ -50,16 +47,6 @@
 			<artifactId>httphandler</artifactId>
 			<version>${httphandler.version}</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>bookkeeper</artifactId>
-			<version>${bookkeeper.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>beefeater</artifactId>
-			<version>${beefeater.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
