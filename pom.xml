@@ -24,14 +24,14 @@
 
 	<properties>
 		<httphandler.version>0.5.1</httphandler.version>
-		<spider.version>0.16.0</spider.version>
-		<basicstorage.version>0.9.0</basicstorage.version>
-		<userpicker.version>0.5.0</userpicker.version>
+		<spider.version>0.17.0</spider.version>
+		<basicstorage.version>0.10.1</basicstorage.version>
+		<userpicker.version>0.6.0</userpicker.version>
 		<gatekeeperclient.version>0.6.0</gatekeeperclient.version>
-		<metacreator.version>0.3.0</metacreator.version>
-		<solrsearch.version>0.3.0</solrsearch.version>
-		<alvintocorastorage.version>0.3.0</alvintocorastorage.version>
-		<alvinmixedstorage.version>0.4.0</alvinmixedstorage.version>
+		<metacreator.version>0.4.0</metacreator.version>
+		<solrsearch.version>0.4.0</solrsearch.version>
+		<alvintocorastorage.version>0.4.0</alvintocorastorage.version>
+		<alvinmixedstorage.version>0.5.0</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
