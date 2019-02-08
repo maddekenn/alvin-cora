@@ -70,6 +70,8 @@ public class AlvinDependencyProviderTest {
 			initInfo.put("basicStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("fedoraToCoraStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("fedoraURL", "http://alvin-cora-fedora:8088/fedora/");
+			initInfo.put("fedoraUsername", "fedoraUser");
+			initInfo.put("fedoraPassword", "fedoraPass");
 			initInfo.put("dbToCoraStorageClassName", "se.uu.ub.cora.alvin.DbStorageSpy");
 			initInfo.put("databaseLookupName", "java:/comp/env/jdbc/postgres");
 			initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
@@ -173,6 +175,26 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
+	public void testMissingFedoraUsernameInInitInfo() {
+		initInfo.remove("fedoraUsername");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain fedoraUsername");
+	}
+
+	@Test
+	public void testMissingFedoraPasswordInInitInfo() {
+		initInfo.remove("fedoraPassword");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain fedoraPassword");
+	}
+
+	@Test
 	public void testMissingDbToCoraStorageClassNameInInitInfo() {
 		initInfo.remove("dbToCoraStorageClassName");
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
@@ -248,6 +270,8 @@ public class AlvinDependencyProviderTest {
 		RecordStorageSpy fedoraToCoraStorage = ((RecordStorageSpy) dependencyProvider
 				.getRecordStorage()).fedoraToCoraStorage;
 		assertEquals(fedoraToCoraStorage.baseURL, initInfo.get("fedoraURL"));
+		assertEquals(fedoraToCoraStorage.fedoraUsername, initInfo.get("fedoraUsername"));
+		assertEquals(fedoraToCoraStorage.fedoraPassword, initInfo.get("fedoraPassword"));
 		assertTrue(fedoraToCoraStorage.httpHandlerFactory instanceof HttpHandlerFactoryImp);
 	}
 

@@ -19,6 +19,8 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	public HttpHandlerFactory httpHandlerFactory;
 	public AlvinFedoraToCoraConverterFactory converterFactory;
 	public String baseURL;
+	public String fedoraUsername;
+	public String fedoraPassword;
 
 	public static RecordStorageSpy createRecordStorageOnDiskWithBasePath(String basePath) {
 		return new RecordStorageSpy(basePath);
@@ -41,16 +43,21 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	}
 
 	private RecordStorageSpy(HttpHandlerFactory httpHandlerFactory,
-			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL) {
+			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL,
+			String fedoraUsername, String fedoraPassword) {
 		this.httpHandlerFactory = httpHandlerFactory;
 		this.converterFactory = converterFactory;
 		this.baseURL = baseURL;
+		this.fedoraUsername = fedoraUsername;
+		this.fedoraPassword = fedoraPassword;
 	}
 
-	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
+	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURLAndFedoraUsernameAndFedoraPassword(
 			HttpHandlerFactory httpHandlerFactory,
-			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL) {
-		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL);
+			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL,
+			String fedoraUsername, String fedoraPassword) {
+		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL, fedoraUsername,
+				fedoraPassword);
 	}
 
 	@Override
