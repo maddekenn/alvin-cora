@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2017, 2018 Uppsala University Library
+ * Copyright 2015, 2016, 2017, 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -28,7 +28,7 @@ import javax.naming.NamingException;
 
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraConverterFactory;
 import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
@@ -149,7 +149,7 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		Class<?>[] cArg = new Class[5];
 		cArg[0] = HttpHandlerFactory.class;
-		cArg[1] = AlvinFedoraToCoraConverterFactory.class;
+		cArg[1] = AlvinFedoraConverterFactory.class;
 		cArg[2] = String.class;
 		cArg[3] = String.class;
 		cArg[4] = String.class;
@@ -157,8 +157,8 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 				"usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURLAndFedoraUsernameAndFedoraPassword",
 				cArg);
 		return (RecordStorage) constructor.invoke(null, new HttpHandlerFactoryImp(),
-				new AlvinFedoraToCoraConverterFactoryImp(), fedoraURL, fedoraUsername,
-				fedoraPassword);
+				AlvinFedoraToCoraConverterFactoryImp.usingFedoraURL(fedoraURL), fedoraURL,
+				fedoraUsername, fedoraPassword);
 	}
 
 	private RecordStorage tryToCreateDbToCoraStorage()

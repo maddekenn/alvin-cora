@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2018 Uppsala University Library
+ * Copyright 2015, 2017, 2018, 2019 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -43,6 +43,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
 import se.uu.ub.cora.connection.ContextConnectionProviderImp;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
@@ -269,10 +270,13 @@ public class AlvinDependencyProviderTest {
 	public void testCorrectInitParametersUsedInFedoraToCoraStorage() throws Exception {
 		RecordStorageSpy fedoraToCoraStorage = ((RecordStorageSpy) dependencyProvider
 				.getRecordStorage()).fedoraToCoraStorage;
+		assertTrue(fedoraToCoraStorage.httpHandlerFactory instanceof HttpHandlerFactoryImp);
+		AlvinFedoraToCoraConverterFactoryImp converterFactory = (AlvinFedoraToCoraConverterFactoryImp) fedoraToCoraStorage.converterFactory;
+		assertTrue(converterFactory instanceof AlvinFedoraToCoraConverterFactoryImp);
+		assertEquals(converterFactory.getFedoraURL(), initInfo.get("fedoraURL"));
 		assertEquals(fedoraToCoraStorage.baseURL, initInfo.get("fedoraURL"));
 		assertEquals(fedoraToCoraStorage.fedoraUsername, initInfo.get("fedoraUsername"));
 		assertEquals(fedoraToCoraStorage.fedoraPassword, initInfo.get("fedoraPassword"));
-		assertTrue(fedoraToCoraStorage.httpHandlerFactory instanceof HttpHandlerFactoryImp);
 	}
 
 	@Test
