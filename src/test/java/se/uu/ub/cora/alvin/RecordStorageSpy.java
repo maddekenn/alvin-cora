@@ -1,8 +1,26 @@
+/*
+ * Copyright 2018, 2019 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.uu.ub.cora.alvin;
 
 import java.util.Collection;
 
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraConverterFactory;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
@@ -17,8 +35,10 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	public RecordStorageSpy fedoraToCoraStorage;
 	public DbStorageSpy dbToCoraStorage;
 	public HttpHandlerFactory httpHandlerFactory;
-	public AlvinFedoraToCoraConverterFactory converterFactory;
+	public AlvinFedoraConverterFactory converterFactory;
 	public String baseURL;
+	public String fedoraUsername;
+	public String fedoraPassword;
 
 	public static RecordStorageSpy createRecordStorageOnDiskWithBasePath(String basePath) {
 		return new RecordStorageSpy(basePath);
@@ -41,16 +61,20 @@ public class RecordStorageSpy implements RecordStorage, MetadataStorage, SearchS
 	}
 
 	private RecordStorageSpy(HttpHandlerFactory httpHandlerFactory,
-			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL) {
+			AlvinFedoraConverterFactory converterFactory, String baseURL, String fedoraUsername,
+			String fedoraPassword) {
 		this.httpHandlerFactory = httpHandlerFactory;
 		this.converterFactory = converterFactory;
 		this.baseURL = baseURL;
+		this.fedoraUsername = fedoraUsername;
+		this.fedoraPassword = fedoraPassword;
 	}
 
-	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL(
-			HttpHandlerFactory httpHandlerFactory,
-			AlvinFedoraToCoraConverterFactory converterFactory, String baseURL) {
-		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL);
+	public static RecordStorageSpy usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURLAndFedoraUsernameAndFedoraPassword(
+			HttpHandlerFactory httpHandlerFactory, AlvinFedoraConverterFactory converterFactory,
+			String baseURL, String fedoraUsername, String fedoraPassword) {
+		return new RecordStorageSpy(httpHandlerFactory, converterFactory, baseURL, fedoraUsername,
+				fedoraPassword);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2018 Uppsala University Library
+ * Copyright 2015, 2017, 2018, 2019 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -43,6 +43,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
 import se.uu.ub.cora.connection.ContextConnectionProviderImp;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
@@ -70,6 +71,8 @@ public class AlvinDependencyProviderTest {
 			initInfo.put("basicStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("fedoraToCoraStorageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
 			initInfo.put("fedoraURL", "http://alvin-cora-fedora:8088/fedora/");
+			initInfo.put("fedoraUsername", "fedoraUser");
+			initInfo.put("fedoraPassword", "fedoraPass");
 			initInfo.put("dbToCoraStorageClassName", "se.uu.ub.cora.alvin.DbStorageSpy");
 			initInfo.put("databaseLookupName", "java:/comp/env/jdbc/postgres");
 			initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
@@ -173,6 +176,26 @@ public class AlvinDependencyProviderTest {
 	}
 
 	@Test
+	public void testMissingFedoraUsernameInInitInfo() {
+		initInfo.remove("fedoraUsername");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain fedoraUsername");
+	}
+
+	@Test
+	public void testMissingFedoraPasswordInInitInfo() {
+		initInfo.remove("fedoraPassword");
+
+		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
+
+		assertTrue(thrownException instanceof RuntimeException);
+		assertEquals(thrownException.getMessage(), "InitInfo must contain fedoraPassword");
+	}
+
+	@Test
 	public void testMissingDbToCoraStorageClassNameInInitInfo() {
 		initInfo.remove("dbToCoraStorageClassName");
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
@@ -247,8 +270,13 @@ public class AlvinDependencyProviderTest {
 	public void testCorrectInitParametersUsedInFedoraToCoraStorage() throws Exception {
 		RecordStorageSpy fedoraToCoraStorage = ((RecordStorageSpy) dependencyProvider
 				.getRecordStorage()).fedoraToCoraStorage;
-		assertEquals(fedoraToCoraStorage.baseURL, initInfo.get("fedoraURL"));
 		assertTrue(fedoraToCoraStorage.httpHandlerFactory instanceof HttpHandlerFactoryImp);
+		AlvinFedoraToCoraConverterFactoryImp converterFactory = (AlvinFedoraToCoraConverterFactoryImp) fedoraToCoraStorage.converterFactory;
+		assertTrue(converterFactory instanceof AlvinFedoraToCoraConverterFactoryImp);
+		assertEquals(converterFactory.getFedoraURL(), initInfo.get("fedoraURL"));
+		assertEquals(fedoraToCoraStorage.baseURL, initInfo.get("fedoraURL"));
+		assertEquals(fedoraToCoraStorage.fedoraUsername, initInfo.get("fedoraUsername"));
+		assertEquals(fedoraToCoraStorage.fedoraPassword, initInfo.get("fedoraPassword"));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2017, 2018 Uppsala University Library
+ * Copyright 2015, 2016, 2017, 2018, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -28,7 +28,7 @@ import javax.naming.NamingException;
 
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
 import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactory;
+import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraConverterFactory;
 import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
@@ -85,6 +85,8 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 	private String dbToCoraStorageClassName;
 	private String fedoraURL;
 	private String databaseLookupName;
+	private String fedoraUsername;
+	private String fedoraPassword;
 
 	public AlvinDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
@@ -95,6 +97,8 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 		storageClassName = tryToGetInitParameter("storageClassName");
 		basicStorageClassName = tryToGetInitParameter("basicStorageClassName");
 		fedoraURL = tryToGetInitParameter("fedoraURL");
+		fedoraUsername = tryToGetInitParameter("fedoraUsername");
+		fedoraPassword = tryToGetInitParameter("fedoraPassword");
 		fedoraToCoraStorageClassName = tryToGetInitParameter("fedoraToCoraStorageClassName");
 		dbToCoraStorageClassName = tryToGetInitParameter("dbToCoraStorageClassName");
 		gatekeeperUrl = tryToGetInitParameter("gatekeeperURL");
@@ -143,14 +147,18 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 
 	private RecordStorage tryToCreateFedoraToCoraStorage() throws NoSuchMethodException,
 			ClassNotFoundException, IllegalAccessException, InvocationTargetException {
-		Class<?>[] cArg = new Class[3];
+		Class<?>[] cArg = new Class[5];
 		cArg[0] = HttpHandlerFactory.class;
-		cArg[1] = AlvinFedoraToCoraConverterFactory.class;
+		cArg[1] = AlvinFedoraConverterFactory.class;
 		cArg[2] = String.class;
-		Method constructor = Class.forName(fedoraToCoraStorageClassName)
-				.getMethod("usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURL", cArg);
+		cArg[3] = String.class;
+		cArg[4] = String.class;
+		Method constructor = Class.forName(fedoraToCoraStorageClassName).getMethod(
+				"usingHttpHandlerFactoryAndConverterFactoryAndFedoraBaseURLAndFedoraUsernameAndFedoraPassword",
+				cArg);
 		return (RecordStorage) constructor.invoke(null, new HttpHandlerFactoryImp(),
-				new AlvinFedoraToCoraConverterFactoryImp(), fedoraURL);
+				AlvinFedoraToCoraConverterFactoryImp.usingFedoraURL(fedoraURL), fedoraURL,
+				fedoraUsername, fedoraPassword);
 	}
 
 	private RecordStorage tryToCreateDbToCoraStorage()
