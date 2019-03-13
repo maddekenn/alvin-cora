@@ -26,10 +26,12 @@ import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
-import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraConverterFactory;
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.db.AlvinDbToCoraConverterFactory;
+import se.uu.ub.cora.alvin.mixedstorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.fedora.AlvinFedoraConverterFactory;
+import se.uu.ub.cora.alvin.mixedstorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.id.AlvinIdGeneratorFactory;
+import se.uu.ub.cora.alvin.mixedstorage.id.IdGeneratorConnectionInfo;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollectorImp;
@@ -58,7 +60,6 @@ import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
-import se.uu.ub.cora.spider.record.storage.TimeStampIdGenerator;
 import se.uu.ub.cora.spider.role.RulesProvider;
 import se.uu.ub.cora.spider.role.RulesProviderImp;
 import se.uu.ub.cora.spider.search.RecordIndexer;
@@ -128,7 +129,8 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 				dbToCoraStorage);
 
 		metadataStorage = (MetadataStorage) basicStorage;
-		idGenerator = new TimeStampIdGenerator();
+		idGenerator = AlvinIdGeneratorFactory.factorUsingConnectionInfo(
+				new IdGeneratorConnectionInfo(fedoraURL, fedoraUsername, fedoraPassword));
 		streamStorage = StreamStorageOnDisk.usingBasePath(basePath + "streams/");
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 		solrRecordIndexer = SolrRecordIndexer

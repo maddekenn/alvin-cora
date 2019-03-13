@@ -2,7 +2,7 @@ package se.uu.ub.cora.alvin;
 
 import java.util.Collection;
 
-import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactory;
+import se.uu.ub.cora.alvin.mixedstorage.db.AlvinDbToCoraConverterFactory;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.searchstorage.SearchStorage;
