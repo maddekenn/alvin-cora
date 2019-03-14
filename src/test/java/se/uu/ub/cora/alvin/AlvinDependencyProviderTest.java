@@ -42,8 +42,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.alvin.tocorastorage.db.AlvinDbToCoraConverterFactoryImp;
-import se.uu.ub.cora.alvin.tocorastorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.db.AlvinDbToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.fedora.AlvinFedoraToCoraConverterFactoryImp;
+import se.uu.ub.cora.alvin.mixedstorage.id.AlvinIdGenerator;
 import se.uu.ub.cora.connection.ContextConnectionProviderImp;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
@@ -133,6 +134,14 @@ public class AlvinDependencyProviderTest {
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 		SolrRecordSearch solrRecordSearch = (SolrRecordSearch) dependencyProvider.getRecordSearch();
 		assertTrue(solrRecordSearch.getSearchStorage() instanceof RecordStorageSpy);
+	}
+
+	@Test
+	public void testIdGenerator() throws Exception {
+		AlvinIdGenerator idGenerator = (AlvinIdGenerator) dependencyProvider.getIdGenerator();
+		assertEquals(idGenerator.getFedoraURL(), initInfo.get("fedoraURL"));
+		assertEquals(idGenerator.getFedoraUsername(), initInfo.get("fedoraUsername"));
+		assertEquals(idGenerator.getFedoraPassword(), initInfo.get("fedoraPassword"));
 	}
 
 	@Test
