@@ -27,11 +27,10 @@
 		<spider.version>0.20.0</spider.version>
 		<basicstorage.version>0.13.0</basicstorage.version>
 		<userpicker.version>0.6.0</userpicker.version>
-		<gatekeeperclient.version>0.8.0</gatekeeperclient.version>
+		<gatekeeperclient.version>0.9.0</gatekeeperclient.version>
 		<metacreator.version>0.8.0</metacreator.version>
 		<solrsearch.version>0.6.0</solrsearch.version>
-<!-- 		<alvintocorastorage.version>0.7-SNAPSHOT</alvintocorastorage.version> -->
-		<alvinmixedstorage.version>0.8-SNAPSHOT</alvinmixedstorage.version>
+		<alvinmixedstorage.version>0.8.0</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
@@ -78,11 +77,6 @@
 			<artifactId>solrsearch</artifactId>
 			<version>${solrsearch.version}</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>se.uu.ub.cora</groupId> -->
-<!-- 			<artifactId>alvintocorastorage</artifactId> -->
-<!-- 			<version>${alvintocorastorage.version}</version> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>alvinmixedstorage</artifactId>
