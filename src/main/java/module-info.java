@@ -1,4 +1,5 @@
 module se.uu.ub.cora.alvin {
+	requires se.uu.ub.cora.logger;
 	requires se.uu.ub.cora.alvin.mixedstorage;
 	requires se.uu.ub.cora.solrsearch;
 	requires se.uu.ub.cora.metacreator;
