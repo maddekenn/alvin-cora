@@ -5,4 +5,7 @@ module se.uu.ub.cora.alvin {
 	requires se.uu.ub.cora.metacreator;
 	requires se.uu.ub.cora.gatekeeperclient;
 	requires se.uu.ub.cora.basicstorage;
+	requires se.uu.ub.cora.sqldatabase;
+	requires se.uu.ub.cora.httphandler;
+	requires se.uu.ub.cora.searchstorage;
 }

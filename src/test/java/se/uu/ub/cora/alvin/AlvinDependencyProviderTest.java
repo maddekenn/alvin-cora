@@ -47,6 +47,7 @@ import se.uu.ub.cora.alvin.mixedstorage.id.AlvinIdGenerator;
 import se.uu.ub.cora.connection.ContextConnectionProviderImp;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
+import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
@@ -54,16 +55,19 @@ import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.search.RecordIndexer;
-import se.uu.ub.cora.sqldatabase.RecordReaderFactoryImp;
+import se.uu.ub.cora.sqldatabase.DataReaderImp;
 
 public class AlvinDependencyProviderTest {
 	private AlvinDependencyProvider dependencyProvider;
 	private String basePath = "/tmp/alvinRecordStorageOnDiskTemp/";
 	private Map<String, String> initInfo;
+	private LoggerFactorySpy loggerFactorySpy;
 
 	@BeforeMethod
 	public void setUp() throws Exception {
 		try {
+			loggerFactorySpy = new LoggerFactorySpy();
+			LoggerProvider.setLoggerFactory(loggerFactorySpy);
 			makeSureBasePathExistsAndIsEmpty();
 			initInfo = new HashMap<>();
 			initInfo.put("storageClassName", "se.uu.ub.cora.alvin.RecordStorageSpy");
@@ -290,10 +294,10 @@ public class AlvinDependencyProviderTest {
 	public void testCorrectInitParametersUsedInDbToCoraStorage() throws Exception {
 		DbStorageSpy dbToCoraStorage = ((RecordStorageSpy) dependencyProvider
 				.getRecordStorage()).dbToCoraStorage;
-		RecordReaderFactoryImp recordReaderFactory = (RecordReaderFactoryImp) dbToCoraStorage.recordReaderFactory;
-		assertTrue(recordReaderFactory instanceof RecordReaderFactoryImp);
-		ContextConnectionProviderImp connectionProvider = (ContextConnectionProviderImp) recordReaderFactory
-				.getConnectionProvider();
+		DataReaderImp dataReader = (DataReaderImp) dbToCoraStorage.dataReader;
+		assertTrue(dataReader instanceof DataReaderImp);
+		ContextConnectionProviderImp connectionProvider = (ContextConnectionProviderImp) dataReader
+				.getSqlConnectionProvider();
 		assertTrue(connectionProvider instanceof ContextConnectionProviderImp);
 
 		assertEquals(connectionProvider.getName(), initInfo.get("databaseLookupName"));
