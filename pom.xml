@@ -25,13 +25,13 @@
 	<properties>
 		<logger.version>1.0.0</logger.version>
 		<httphandler.version>1.0.0</httphandler.version>
-		<spider.version>1.1.0</spider.version>
+		<spider.version>1.2.0</spider.version>
 		<basicstorage.version>1.2.0</basicstorage.version>
 		<userpicker.version>1.1.0</userpicker.version>
 		<gatekeeperclient.version>1.1.0</gatekeeperclient.version>
 		<metacreator.version>1.0.0</metacreator.version>
 		<solrsearch.version>1.1.0</solrsearch.version>
-		<alvinmixedstorage.version>1.2-SNAPSHOT</alvinmixedstorage.version>
+		<alvinmixedstorage.version>1.2.0</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
