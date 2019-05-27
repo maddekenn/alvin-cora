@@ -8,23 +8,21 @@ import se.uu.ub.cora.bookkeeper.storage.MetadataStorage;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.spider.data.SpiderReadResult;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
-import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
+import se.uu.ub.cora.sqldatabase.DataReader;
 
 public class DbStorageSpy implements RecordStorage, MetadataStorage, SearchStorage {
 
-	public RecordReaderFactory recordReaderFactory;
+	public DataReader dataReader;
 	public AlvinDbToCoraConverterFactory converterFactory;
 
-	public DbStorageSpy(RecordReaderFactory recordReaderFactory,
-			AlvinDbToCoraConverterFactory converterFactory) {
-		this.recordReaderFactory = recordReaderFactory;
+	public DbStorageSpy(DataReader dataReader, AlvinDbToCoraConverterFactory converterFactory) {
+		this.dataReader = dataReader;
 		this.converterFactory = converterFactory;
 	}
 
-	public static DbStorageSpy usingRecordReaderFactoryAndConverterFactory(
-			RecordReaderFactory recordReaderFactory,
+	public static DbStorageSpy usingDataReaderAndConverterFactory(DataReader dataReader,
 			AlvinDbToCoraConverterFactory converterFactory) {
-		return new DbStorageSpy(recordReaderFactory, converterFactory);
+		return new DbStorageSpy(dataReader, converterFactory);
 	}
 
 	@Override

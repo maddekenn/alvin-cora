@@ -64,8 +64,8 @@ import se.uu.ub.cora.spider.role.RulesProvider;
 import se.uu.ub.cora.spider.role.RulesProviderImp;
 import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
-import se.uu.ub.cora.sqldatabase.RecordReaderFactory;
-import se.uu.ub.cora.sqldatabase.RecordReaderFactoryImp;
+import se.uu.ub.cora.sqldatabase.DataReader;
+import se.uu.ub.cora.sqldatabase.DataReaderImp;
 import se.uu.ub.cora.storage.StreamStorageOnDisk;
 
 public class AlvinDependencyProvider extends SpiderDependencyProvider {
@@ -167,17 +167,18 @@ public class AlvinDependencyProvider extends SpiderDependencyProvider {
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ClassNotFoundException, NamingException {
 		Class<?>[] cArg = new Class[2];
-		cArg[0] = RecordReaderFactory.class;
+		cArg[0] = DataReader.class;
 		cArg[1] = AlvinDbToCoraConverterFactory.class;
 		Method constructor = Class.forName(dbToCoraStorageClassName)
-				.getMethod("usingRecordReaderFactoryAndConverterFactory", cArg);
+				.getMethod("usingDataReaderAndConverterFactory", cArg);
 
 		SqlConnectionProvider sqlConnectionProvider = createConnectionProvider();
 
-		RecordReaderFactoryImp recordReaderFactory = new RecordReaderFactoryImp(
-				sqlConnectionProvider);
-		return (RecordStorage) constructor.invoke(null, recordReaderFactory,
-				new AlvinDbToCoraConverterFactoryImp());
+		DataReaderImp dataReaderImp = DataReaderImp
+				.usingSqlConnectionProvider(sqlConnectionProvider);
+		AlvinDbToCoraConverterFactoryImp converterFactoryImp = AlvinDbToCoraConverterFactoryImp
+				.usingDataReader(dataReaderImp);
+		return (RecordStorage) constructor.invoke(null, dataReaderImp, converterFactoryImp);
 	}
 
 	private SqlConnectionProvider createConnectionProvider() throws NamingException {
