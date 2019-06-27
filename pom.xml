@@ -31,7 +31,7 @@
 		<gatekeeperclient.version>1.1.0</gatekeeperclient.version>
 		<metacreator.version>1.0.0</metacreator.version>
 		<solrsearch.version>1.1.0</solrsearch.version>
-		<alvinmixedstorage.version>1.5.0</alvinmixedstorage.version>
+		<alvinmixedstorage.version>1.6.1</alvinmixedstorage.version>
 	</properties>
 
 	<scm>
