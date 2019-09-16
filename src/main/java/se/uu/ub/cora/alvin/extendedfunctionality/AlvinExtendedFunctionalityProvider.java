@@ -1,4 +1,4 @@
-package se.uu.ub.cora.alvin;
+package se.uu.ub.cora.alvin.extendedfunctionality;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class AlvinExtendedFunctionalityProvider extends BaseExtendedFunctionalit
 				recordType);
 		if ("place".equals(recordType)) {
 			list = ensureListExists(list);
-			list.add(new PlaceBeforeDeleteUpdater());
+			list.add(new PlaceBeforeDeleteUpdater(dependencyProvider));
 
 		}
 		return list;

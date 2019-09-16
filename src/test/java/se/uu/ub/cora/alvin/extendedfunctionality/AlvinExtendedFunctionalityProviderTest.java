@@ -16,34 +16,39 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.alvin;
+package se.uu.ub.cora.alvin.extendedfunctionality;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionality;
 
 public class AlvinExtendedFunctionalityProviderTest {
 
 	private AlvinExtendedFunctionalityProvider functionalityProvider;
+	private SpiderDependencyProvider dependencyProvider;
 
 	@BeforeMethod
 	public void setUp() {
-		functionalityProvider = new AlvinExtendedFunctionalityProvider(null);
-
+		dependencyProvider = new DependencyProviderSpy(new HashMap<>());
+		functionalityProvider = new AlvinExtendedFunctionalityProvider(dependencyProvider);
 	}
 
 	@Test
 	public void testFunctionalityBeforeDeleteWhenNotImplementedForRecordType() {
-		AlvinExtendedFunctionalityProvider functionalityProvider = new AlvinExtendedFunctionalityProvider(
-				null);
+		// AlvinExtendedFunctionalityProvider functionalityProvider = new
+		// AlvinExtendedFunctionalityProvider(
+		// dependencyProvider);
 		List<ExtendedFunctionality> functionalityList = functionalityProvider
 				.getFunctionalityBeforeDelete("someRecordType");
 		assertEquals(functionalityList, Collections.emptyList());
@@ -56,6 +61,10 @@ public class AlvinExtendedFunctionalityProviderTest {
 
 		assertEquals(functionalityList.size(), 1);
 		assertTrue(functionalityList.get(0) instanceof PlaceBeforeDeleteUpdater);
+
+		PlaceBeforeDeleteUpdater beforeDeleteUpdater = (PlaceBeforeDeleteUpdater) functionalityList
+				.get(0);
+		assertSame(beforeDeleteUpdater.getDependencyProvider(), dependencyProvider);
 
 	}
 
