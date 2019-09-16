@@ -21,14 +21,24 @@ package se.uu.ub.cora.alvin;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.extended.ExtendedFunctionality;
 
 public class AlvinExtendedFunctionalityProviderTest {
+
+	private AlvinExtendedFunctionalityProvider functionalityProvider;
+
+	@BeforeMethod
+	public void setUp() {
+		functionalityProvider = new AlvinExtendedFunctionalityProvider(null);
+
+	}
 
 	@Test
 	public void testFunctionalityBeforeDeleteWhenNotImplementedForRecordType() {
@@ -41,14 +51,21 @@ public class AlvinExtendedFunctionalityProviderTest {
 
 	@Test
 	public void testFunctionalityBeforeDeleteForPlace() {
-		AlvinExtendedFunctionalityProvider functionalityProvider = new AlvinExtendedFunctionalityProvider(
-				null);
 		List<ExtendedFunctionality> functionalityList = functionalityProvider
 				.getFunctionalityBeforeDelete("place");
 
 		assertEquals(functionalityList.size(), 1);
 		assertTrue(functionalityList.get(0) instanceof PlaceBeforeDeleteUpdater);
 
+	}
+
+	@Test
+	public void testEnsureListIsRealList() {
+		assertTrue(functionalityProvider
+				.ensureListExists(Collections.emptyList()) instanceof ArrayList);
+		List<ExtendedFunctionality> list = new ArrayList<>();
+		list.add(null);
+		assertEquals(functionalityProvider.ensureListExists(list), list);
 	}
 
 }

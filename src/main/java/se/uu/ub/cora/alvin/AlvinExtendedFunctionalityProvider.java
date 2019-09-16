@@ -16,17 +16,21 @@ public class AlvinExtendedFunctionalityProvider extends BaseExtendedFunctionalit
 
 	@Override
 	public List<ExtendedFunctionality> getFunctionalityBeforeDelete(String recordType) {
-		// List<ExtendedFunctionality> list =
-		// super.getFunctionalityForCreateBeforeMetadataValidation(
-		// recordTypeId);
-		List<ExtendedFunctionality> list = new ArrayList<>();
+		List<ExtendedFunctionality> list = super.getFunctionalityForCreateBeforeMetadataValidation(
+				recordType);
 		if ("place".equals(recordType)) {
-			// list = ensureListExists(list);
+			list = ensureListExists(list);
 			list.add(new PlaceBeforeDeleteUpdater());
-			return list;
 
 		}
-		return Collections.emptyList();
+		return list;
+	}
+
+	protected List<ExtendedFunctionality> ensureListExists(List<ExtendedFunctionality> list) {
+		if (Collections.emptyList().equals(list)) {
+			return new ArrayList<>();
+		}
+		return list;
 	}
 
 }
