@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionality;
 
-public class AlvinExtendedFunctionalityProvider extends BaseExtendedFunctionalityProvider {
+public class AlvinExtendedFunctionalityProvider extends MetacreatorExtendedFunctionalityProvider {
 
 	private static final String PLACE = "place";
 
@@ -45,11 +45,16 @@ public class AlvinExtendedFunctionalityProvider extends BaseExtendedFunctionalit
 		return list;
 	}
 
+	@Override
 	protected List<ExtendedFunctionality> ensureListExists(List<ExtendedFunctionality> list) {
 		if (Collections.emptyList().equals(list)) {
 			return new ArrayList<>();
 		}
 		return list;
+	}
+
+	public SpiderDependencyProvider getDependencyProvider() {
+		return dependencyProvider;
 	}
 
 }

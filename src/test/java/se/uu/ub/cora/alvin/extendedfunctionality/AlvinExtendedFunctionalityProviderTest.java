@@ -40,6 +40,8 @@ public class AlvinExtendedFunctionalityProviderTest {
 	@BeforeMethod
 	public void setUp() {
 		dependencyProvider = new DependencyProviderSpy(new HashMap<>());
+		RecordStorageProviderSpy storageProvider = new RecordStorageProviderSpy();
+		dependencyProvider.setRecordStorageProvider(storageProvider);
 		functionalityProvider = new AlvinExtendedFunctionalityProvider(dependencyProvider);
 	}
 
