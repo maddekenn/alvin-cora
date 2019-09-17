@@ -22,18 +22,16 @@ package se.uu.ub.cora.alvin.extendedfunctionality;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 
-import java.util.HashMap;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 
-public class PlaceBeforeDeleteUpdaterTest {
+public class RecordBeforeDeleteUpdaterTest {
 	SpiderDependencyProvider dependencyProvider;
-	private RecordStorageSpy recordStorage;
 	private SpiderInstanceFactorySpy spiderInstanceFactory;
 
 	@BeforeMethod
@@ -41,35 +39,43 @@ public class PlaceBeforeDeleteUpdaterTest {
 		spiderInstanceFactory = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactory);
 
-		// recordStorage = new RecordStorageSpy();
-		// setUpDependencyProvider();
 	}
 
 	@Test
 	public void testInit() {
-		PlaceBeforeDeleteUpdater updater = new PlaceBeforeDeleteUpdater(dependencyProvider);
+		RecordBeforeDeleteUpdater updater = new RecordBeforeDeleteUpdater();
 		String authToken = "someAuthToken";
-		SpiderDataGroup dataGroup = SpiderDataGroup.withNameInData("someNameInData");
-		updater.useExtendedFunctionality(authToken, null);
+		SpiderDataGroup dataGroup = createDataGroup();
+		updater.useExtendedFunctionality(authToken, dataGroup);
 		SpiderRecordUpdaterSpy factoredUpdater = (SpiderRecordUpdaterSpy) spiderInstanceFactory.factoredRecordUpdaters
 				.get(0);
 
 		assertEquals(authToken, factoredUpdater.authToken);
 		assertSame(dataGroup, factoredUpdater.record);
+		assertEquals("someRecordType", factoredUpdater.type);
+		assertEquals("someRecordId", factoredUpdater.id);
 	}
 
-	private void setUpDependencyProvider() {
-		dependencyProvider = new DependencyProviderSpy(new HashMap<>());
-		// dependencyProvider.authenticator = authenticator;
-		// dependencyProvider.spiderAuthorizator = spiderAuthorizator;
-		// dependencyProvider.dataValidator = dataValidator;
-		RecordStorageProviderSpy recordStorageProviderSpy = new RecordStorageProviderSpy();
-		recordStorageProviderSpy.recordStorage = recordStorage;
-		dependencyProvider.setRecordStorageProvider(recordStorageProviderSpy);
+	private SpiderDataGroup createDataGroup() {
+		SpiderDataGroup dataGroup = SpiderDataGroup.withNameInData("someNameInData");
+		SpiderDataGroup recordInfo = createRecordInfo();
+		dataGroup.addChild(recordInfo);
+		return dataGroup;
+	}
 
-		// dependencyProvider.ruleCalculator = ruleCalculator;
-		// dependencyProvider.linkCollector = linkCollector;
-		// dependencyProvider.extendedFunctionalityProvider = extendedFunctionalityProvider;
+	private SpiderDataGroup createRecordInfo() {
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		SpiderDataGroup type = createType();
+		recordInfo.addChild(type);
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "someRecordId"));
+		return recordInfo;
+	}
+
+	private SpiderDataGroup createType() {
+		SpiderDataGroup type = SpiderDataGroup.withNameInData("type");
+		type.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		type.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordType"));
+		return type;
 	}
 
 }

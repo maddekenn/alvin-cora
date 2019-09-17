@@ -19,7 +19,6 @@
 package se.uu.ub.cora.alvin.extendedfunctionality;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -46,9 +45,6 @@ public class AlvinExtendedFunctionalityProviderTest {
 
 	@Test
 	public void testFunctionalityBeforeDeleteWhenNotImplementedForRecordType() {
-		// AlvinExtendedFunctionalityProvider functionalityProvider = new
-		// AlvinExtendedFunctionalityProvider(
-		// dependencyProvider);
 		List<ExtendedFunctionality> functionalityList = functionalityProvider
 				.getFunctionalityBeforeDelete("someRecordType");
 		assertEquals(functionalityList, Collections.emptyList());
@@ -60,11 +56,7 @@ public class AlvinExtendedFunctionalityProviderTest {
 				.getFunctionalityBeforeDelete("place");
 
 		assertEquals(functionalityList.size(), 1);
-		assertTrue(functionalityList.get(0) instanceof PlaceBeforeDeleteUpdater);
-
-		PlaceBeforeDeleteUpdater beforeDeleteUpdater = (PlaceBeforeDeleteUpdater) functionalityList
-				.get(0);
-		assertSame(beforeDeleteUpdater.getDependencyProvider(), dependencyProvider);
+		assertTrue(functionalityList.get(0) instanceof RecordBeforeDeleteUpdater);
 
 	}
 
