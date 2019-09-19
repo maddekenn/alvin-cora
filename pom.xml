@@ -39,7 +39,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/alvin-cora.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/alvin-cora.git</url>
-	  <tag>HEAD</tag>
+	  <tag>release/2.4</tag>
   </scm>
 
 	<dependencies>
