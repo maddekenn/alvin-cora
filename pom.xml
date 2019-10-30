@@ -27,12 +27,9 @@
 	
 	<properties>
 		<!-- compile -->
-		<therest.version>3.0.0</therest.version>
+		<therest.version>3.1.0</therest.version>
 		<alvinmixedstorage.version>2.0.0</alvinmixedstorage.version>
-		
-		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
-		<jersey.version>2.27</jersey.version>
-		
+		<servlet-api.version>4.0.1</servlet-api.version>
 	</properties>
 
 	<scm>
@@ -67,7 +64,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
+			<version>${servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
